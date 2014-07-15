@@ -29,18 +29,18 @@ then
 		if [ ${#color[@]} = 0 ]
 		then
 				echo "Colors in the file ${last} :"
-				cat $last | grep "style\s*=\s*\"fill:#......" | sed -e 's/.*style\s*=\s*"fill:#\(......\).*/\1/' | sort -u
+				cat $last | grep "fill:#......" | sed -e 's/fill:#\(......\).*/\1/' | sort -u
 
 		elif [ $k = 0 ]
 		then
 				#premiere passe pour création du fichier _new
-				sed "s/style=\"fill:\#${color[0]};\"/style=\"fill:\#${color[1]};\"/g" $last > ${last%.*}_new.svg
+				sed "s/fill:\#${color[0]}/fill:\#${color[1]}/g" $last > ${last%.*}_new.svg
 
 				#les autres passes où j'édite le fichier créé
 				for ((i=2;i<y;i=i+2))
 				do
 						let "v = $i + 1"
-						sed -i.bak "s/style=\"fill:\#${color[$i]};\"/style=\"fill:\#${color[$v]};\"/g" ${last%.*}_new.svg
+						sed -i.bak "s/fill:\#${color[$i]}/fill:\#${color[$v]}/g" ${last%.*}_new.svg
 				done
 		else
 				#message d'erreur
@@ -55,6 +55,12 @@ then
 		mkdir "$directory"
 
 		find $last -type f -maxdepth 1 -iname '*.svg' | while read FILE; do
+		#echapement espace
+		a=`echo ${FILE} | sed -e 's/ //g'`
+		mv "${FILE}" "$a"
+		done
+
+		find $last -type f -maxdepth 1 -iname '*.svg' | while read FILE; do
 
 				#test pour voir si couple (couleur/remplacement)
 				let "k = ${#color[@]} % 2"
@@ -63,19 +69,19 @@ then
 				then
 
 						echo "Colors in the file ${FILE} :"
-						cat ${FILE} | grep "style\s*=\s*\"fill:#......" | sed -e 's/.*style\s*=\s*"fill:#\(......\).*/\1/' | sort -u
+						cat ${FILE} | grep "fill:#......" | sed -e 's/fill:#\(......\).*/\1/' | sort -u
 
 				elif [ $k = 0 ]
 				then
 						#premiere passe pour création du fichier _new
 						realName=$(basename ${FILE})
-						sed "s/style=\"fill:\#${color[0]};\"/style=\"fill:\#${color[1]};\"/g" ${FILE} > $directory/${realName%.*}_new.svg
+						sed "s/fill:\#${color[0]}/fill:\#${color[1]}/g" ${FILE} > $directory/${realName%.*}_new.svg
 
 						#les autres passes où j'édite le fichier créé
 						for ((i=0;i<y;i=i+2))
 						do
 								let "v = $i + 1"
-								sed -i.bak "s/style=\"fill:\#${color[$i]};\"/style=\"fill:\#${color[$v]};\"/g" $directory/${realName%.*}_new.svg
+								sed -i.bak "s/fill:\#${color[$i]}/fill:\#${color[$v]}/g" $directory/${realName%.*}_new.svg
 						done
 				else
 						#message d'erreur
