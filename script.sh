@@ -51,10 +51,10 @@ then
 
 elif [ -d $last ]
 then
-		mkdir "${last}/newSvgs"
-		directory="${last}/newSvgs"
+		directory="${last}/newSvgs${color[1]}-${color[3]}"
+		mkdir "$directory"
 
-		find $last -type f -iname '*.svg' | while read FILE; do
+		find $last -type f -maxdepth 1 -iname '*.svg' | while read FILE; do
 
 				#test pour voir si couple (couleur/remplacement)
 				let "k = ${#color[@]} % 2"
@@ -69,7 +69,7 @@ then
 				then
 						#premiere passe pour création du fichier _new
 						realName=$(basename ${FILE})
-						sed "s/style=\"fill:\#${color[1]};\"/style=\"fill:\#${color[2]};\"/g" ${FILE} > $directory/${realName%.*}_new.svg
+						sed "s/style=\"fill:\#${color[0]};\"/style=\"fill:\#${color[1]};\"/g" ${FILE} > $directory/${realName%.*}_new.svg
 
 						#les autres passes où j'édite le fichier créé
 						for ((i=0;i<y;i=i+2))
